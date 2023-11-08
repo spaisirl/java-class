@@ -27,7 +27,7 @@ public class TabAndThreadEx extends JFrame{
 		con.add(label);
 		con.setFocusable(true);
 		con.requestFocus();
-		
+		/*
 		con.addKeyListener(new KeyAdapter() {
 		
 		@Override
@@ -42,9 +42,11 @@ public class TabAndThreadEx extends JFrame{
 			}
 		}
 		});
+		*/
 		
 		Thread th = new Thread(label);
 		th.start();
+		
 		
 	}
 	public static void main(String[] args) {
