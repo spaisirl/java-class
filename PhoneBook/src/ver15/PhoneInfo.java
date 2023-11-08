@@ -4,7 +4,7 @@ public abstract class PhoneInfo {
 	private String name;
 	private String phoneNumber;
 	private String birthDay;
-
+	
 	// public PhoneInfo() { }
 	public PhoneInfo(String name, String phoneNumber) {
 		this.name = name;

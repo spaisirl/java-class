@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -17,7 +18,6 @@ public class PhoneBook {
 	// --------------------------------------------------
 	
 	private Vector<PhoneInfo> vec = new Vector<>();
-	private static final String FILE_NAME = "book.csv";
 	private static final String SCHOOL_NUM = "1";
 	private static final String COMPANY_NUM = "2";
 //	private PhoneInfo[] storage = new PhoneInfo[10];
@@ -93,87 +93,42 @@ public class PhoneBook {
 		
 	}
 	
-	public void save() {
-		File f = new File(FILE_NAME);
+	public void load(String path) {
+		File f = new File(path);
 		try {
-			FileWriter fw = new FileWriter(f);
-			BufferedWriter bw = new BufferedWriter(fw);
-			StringBuffer sb = new StringBuffer();
-			for (PhoneInfo info : vec) {
-				String name = info.getName();
-				String phoneNumber = info.getPhoneNumber();
-				String birthDay = info.getBirthDay();
-				
-				String scName = null;
-				String scNum = null;
-				if (info instanceof PhoneInfoSchool) {
-					scName = ((PhoneInfoSchool)info).getSchool();
-					scNum = SCHOOL_NUM;
-				} else if (info instanceof PhoneInfoCompany) {
-					scName = ((PhoneInfoCompany)info).getCompany();
-					scNum = COMPANY_NUM;
-				}
-				
-				sb.append(name);
-				sb.append(",");
-				sb.append(phoneNumber);
-				sb.append(",");
-				sb.append(birthDay);
-				sb.append(",");
-				sb.append(scName);
-				sb.append(",");
-				sb.append(scNum);
-				sb.append("\n");
-			} // for
-			bw.write(sb.toString());
-			bw.close();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void setLoad(String path) {
-		//String fileName = path;
-		try {
-			//Vector<PhoneInfo> vec = new Vector<>(); 이쪽에 벡터를 새로 만들면 이곳 클래스에서 만든 벡터는 쓸 수 없다.
-			//메서드에 대한 이해가 부족
-			//setLoad 메서드에 string path를 넣으면 path를 전달할 수 있다.
-			// ()에 넣지 않고 String fileName = path; 해도 사용 가능.
-			FileReader fr = new FileReader(path);
+			FileReader fr = new  FileReader(f);
 			BufferedReader br = new BufferedReader(fr);
 			while (true) {
-				String str = br.readLine();
-				if (str == null) {
+				String data = br.readLine();
+				if (data == null) {
 					break;
 				}
-//				System.out.println(str);
-				StringTokenizer tokenizer = new StringTokenizer(str, ",");
+				StringTokenizer tokenizer =
+						new StringTokenizer(data, ",");
 				String name = tokenizer.nextToken();
 				String phoneNumber = tokenizer.nextToken();
 				String birthDay = tokenizer.nextToken();
 				String scName = tokenizer.nextToken();
 				String scNum = tokenizer.nextToken();
 				PhoneInfo info = null;
-				switch (scNum) {
-				case "1":
+				if (scNum.equals(SCHOOL_NUM)) {
 					info = new PhoneInfoSchool(name, phoneNumber, birthDay, scName);
-					break;
-				case "2":
+				} else if (scNum.equals(COMPANY_NUM)) {
 					info = new PhoneInfoCompany(name, phoneNumber, birthDay, scName);
-					break;
 				}
 				vec.add(info);
 			}
 			System.out.println(vec);
 			br.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			
 		}
 	}
-	public void setSave(String path) {
+	
+	public void save(String path) {
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(path));
+			BufferedWriter bw = new BufferedWriter(
+					new FileWriter(path));
 			StringBuffer sb = new StringBuffer();
 			for (PhoneInfo info : vec) {
 				String name = info.getName();
@@ -198,12 +153,10 @@ public class PhoneBook {
 				sb.append(",");
 				sb.append(scNum);
 				sb.append("\n");
-				}
-		
+			}
 			bw.write(sb.toString());
 			bw.close();
-		
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

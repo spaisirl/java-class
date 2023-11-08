@@ -15,11 +15,11 @@ public class PhoneInfoCompany extends PhoneInfo {
 	public String getCompany() {
 		return company;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("PhoneInfoComapany");
+		sb.append("PhoneInfoCompany");
 		sb.append("[");
 		sb.append("name=");
 		sb.append(getName());
@@ -32,6 +32,5 @@ public class PhoneInfoCompany extends PhoneInfo {
 		sb.append("]");
 		return sb.toString();
 	}
-
 
 }

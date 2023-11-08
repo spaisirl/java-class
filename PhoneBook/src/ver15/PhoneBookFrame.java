@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -28,22 +27,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 @SuppressWarnings("serial")
 public class PhoneBookFrame extends JFrame implements ActionListener {
-	private static final String DELIM = " / ";
+	private static final String DELIM = " | ";
 	private PhoneBook book = PhoneBook.getInstance();
 	private PhoneBookDao dao = PhoneBookDao.getInstance();
 	private Container con = getContentPane();
-	private Vector<JMenuItem> vecItem = new Vector<>();
-	private JFileChooser chooser = new JFileChooser();
-	private FileNameExtensionFilter filter = new FileNameExtensionFilter("txt", "txt");
-
-	
-	// North
-//	private JTextField tfName = new JTextField(); // 이름
-//	private JTextField tfPhoneNumber = new JTextField(); // 전화번호
-//	private JTextField tfBirdthDay = new JTextField(); // 생일
-//	private JRadioButton rdoSchool = new JRadioButton("학교", true);
-//	private JRadioButton rdoCompany = new JRadioButton("회사");
-//	private JTextField tfSchoolOrCompanyName = new JTextField();
+	private JFileChooser chooser = new JFileChooser("./");
+	private FileNameExtensionFilter filter =
+			new FileNameExtensionFilter("데이터 파일(txt)", "txt");
 	
 	// Center
 	private JTextArea taMessage = new JTextArea();
@@ -56,19 +46,42 @@ public class PhoneBookFrame extends JFrame implements ActionListener {
 	private JButton btnUpdate = new JButton("수정");
 	private JButton btnDelete = new JButton("삭제");
 	private JButton btnExit = new JButton("종료");
-	private JButton btnSave = new JButton("저장");
+	
+	JMenuItem miLoad = new JMenuItem("불러오기");
+	JMenuItem miSave = new JMenuItem("저장하기");
+	JMenuItem miInput = new JMenuItem("입력");
+	JMenuItem miGetAll = new JMenuItem("전체조회");
+	JMenuItem miUpdate = new JMenuItem("수정");
+	JMenuItem miDelete = new JMenuItem("삭제");
+	JMenuItem miExit = new JMenuItem("종료");
 	
 	private MyInputDialog myInputDialog = new MyInputDialog(this, "입력", true);
 	
 	public PhoneBookFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("전화번화부 ver.12");
+		setTitle("전화번화부 ver.15");
 		setSize(500, 500);
 		setUI();
+		setMenu();
 		setListener();
-		createMenu();
-		
 		setVisible(true);
+	}
+
+	private void setMenu() {
+		JMenuBar menuBar = new JMenuBar();
+		JMenu mnuFile = new JMenu("파일");
+		
+		mnuFile.add(miLoad);
+		mnuFile.add(miSave);
+		mnuFile.add(miInput);
+		mnuFile.add(miGetAll);
+		mnuFile.add(miUpdate);
+		mnuFile.add(miDelete);
+		mnuFile.addSeparator();
+		mnuFile.add(miExit);
+		
+		menuBar.add(mnuFile);
+		setJMenuBar(menuBar);
 	}
 
 	private void setListener() {
@@ -79,7 +92,14 @@ public class PhoneBookFrame extends JFrame implements ActionListener {
 		btnUpdate.addActionListener(this);
 		btnDelete.addActionListener(this);
 		btnExit.addActionListener(this);
-		btnSave.addActionListener(this);
+		
+		miLoad.addActionListener(this);
+		miSave.addActionListener(this);
+		miInput.addActionListener(this);
+		miGetAll.addActionListener(this);
+		miUpdate.addActionListener(this);
+		miDelete.addActionListener(this);
+		miExit.addActionListener(this);
 	}
 
 	private void setUI() {
@@ -87,27 +107,15 @@ public class PhoneBookFrame extends JFrame implements ActionListener {
 		setCenter();
 		setSouth();
 		chooser.setFileFilter(filter);
-		
 	}
 
 	private void setSouth() {
 		JPanel pnlSouth = new JPanel();
-		pnlSouth.setLayout(new GridLayout(2, 1));
-		JPanel pnlSearch = new JPanel();
-		pnlSearch.add(new JLabel("검색:"));
-		pnlSearch.add(tfSearch);
-		pnlSearch.add(btnSearch);
-		pnlSouth.add(pnlSearch);
-		con.add(pnlSearch, BorderLayout.NORTH);
-		
-		JPanel pnlButton = new JPanel();
-		pnlButton.add(btnInput);
-		pnlButton.add(btnGetAll);
-		pnlButton.add(btnUpdate);
-		pnlButton.add(btnDelete);
-		pnlButton.add(btnExit);
-		pnlButton.add(btnSave);
-		pnlSouth.add(pnlButton);
+		pnlSouth.add(btnInput);
+		pnlSouth.add(btnGetAll);
+		pnlSouth.add(btnUpdate);
+		pnlSouth.add(btnDelete);
+		pnlSouth.add(btnExit);
 		con.add(pnlSouth, BorderLayout.SOUTH);
 	}
 
@@ -118,28 +126,35 @@ public class PhoneBookFrame extends JFrame implements ActionListener {
 	}
 
 	private void setNorth() {
-//		JPanel pnlInput = new JPanel();
-//		pnlInput.setLayout(new GridLayout(2, 4));
-//		pnlInput.add(new JLabel("이름:"));
-//		pnlInput.add(tfName);
-//		pnlInput.add(new JLabel("전화번호:"));
-//		pnlInput.add(tfPhoneNumber);
-//		pnlInput.add(new JLabel("생일:"));
-//		pnlInput.add(tfBirdthDay);
-//		JPanel pnlSchoolOrCompany = new JPanel();
-//		pnlSchoolOrCompany.add(rdoSchool);
-//		pnlSchoolOrCompany.add(rdoCompany);
-//		ButtonGroup group = new ButtonGroup();
-//		group.add(rdoSchool);
-//		group.add(rdoCompany);
-//		pnlInput.add(pnlSchoolOrCompany);
-//		pnlInput.add(tfSchoolOrCompanyName);
-//		con.add(pnlInput, BorderLayout.NORTH);
+		JPanel pnlSearch = new JPanel();
+		pnlSearch.add(new JLabel("검색:"));
+		pnlSearch.add(tfSearch);
+		pnlSearch.add(btnSearch);
+		con.add(pnlSearch, BorderLayout.NORTH);
 		
 	}
 
 	public static void main(String[] args) {
 		new PhoneBookFrame();
+	}
+	
+	private void printData(PhoneInfo info) {
+		taMessage.setText("");
+		
+		String name = info.getName();
+		String phoneNumber = info.getPhoneNumber();
+		String birthDay = info.getBirthDay();
+		String schoolOrCompanyName = "";
+		if (info instanceof PhoneInfoSchool) {
+			schoolOrCompanyName = ((PhoneInfoSchool)info).getSchool();
+		} else {
+			schoolOrCompanyName = ((PhoneInfoCompany)info).getCompany();
+		}
+		taMessage.append(name + DELIM);
+		taMessage.append(phoneNumber + DELIM);
+		taMessage.append(birthDay + DELIM);
+		taMessage.append(schoolOrCompanyName + "\n");
+		
 	}
 	
 	private void printData(Vector<PhoneInfo> vector) {
@@ -161,184 +176,73 @@ public class PhoneBookFrame extends JFrame implements ActionListener {
 		}
 	}
 	
-//	private PhoneInfo makePhoneInfo() {
-//		String name = tfName.getText();
-//		String phoneNumber = tfPhoneNumber.getText();
-//		String birthDay = tfBirdthDay.getText();
-//		String schoolOrCompanyName = tfSchoolOrCompanyName.getText();
-//		PhoneInfo info = null;
-//		if (rdoSchool.isSelected()) {
-//			info = new PhoneInfoSchool(name, phoneNumber, birthDay, schoolOrCompanyName);
-//		} else {
-//			info = new PhoneInfoCompany(name, phoneNumber, birthDay, schoolOrCompanyName);
-//		}
-//		return info;
-//	}
-	
-	private boolean inputData(PhoneInfo info) {
-		
-		return book.addInfo(info);
-	}
-	
-	private void createMenu() {
-		// 메뉴바 - 프레임에 붙일
-		JMenuBar menuBar = new JMenuBar();
-		
-		// 메뉴 - 메뉴바에 붙일
-		JMenu mnuScreen = new JMenu("파일");
-		
-		
-		//메뉴바에 메뉴들 붙이기
-		menuBar.add(mnuScreen);	
-		
-		//Screen 메뉴에 붙일 아이템들
-		JMenuItem miInput = new JMenuItem("입력");
-		miInput.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				myInputDialog.setVisible(true);
-				System.out.println("다이얼로그 열림");
-				
-			}
-			
-		});
-		
-		JMenuItem miLoad = new JMenuItem("불려오기");
-		miLoad.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int result = chooser.showOpenDialog(miLoad);
-				if (result != JFileChooser.APPROVE_OPTION) {
-					JOptionPane.showMessageDialog(null, "선택하지 않으셨습니다.", "입력", JOptionPane.INFORMATION_MESSAGE);
-					return;
-				}
-				File selectedFile = chooser.getSelectedFile();
-				String path = selectedFile.getPath();
-				System.out.println("path:" + path);
-				book.setLoad(path);
-
-			}
-		});
-		
-		JMenuItem miSave = new JMenuItem("저장");
-		miSave.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int result = chooser.showSaveDialog(miSave);
-				if (result != JFileChooser.APPROVE_OPTION) {
-					JOptionPane.showMessageDialog(null, "선택하지 않으셨습니다.", "입력", JOptionPane.INFORMATION_MESSAGE);
-					return;
-				}
-				File selectedFile = chooser.getSelectedFile();
-				String path = selectedFile.getPath();
-				System.out.println("path:" + path);
-				book.setSave(path);
-
-			}
-		});
-		
-		JMenuItem miHide = new JMenuItem("전체조회");
-		JMenuItem miReshow = new JMenuItem("수정");
-		JMenuItem miDelete = new JMenuItem("삭제");
-		JMenuItem miExit = new JMenuItem("종료");
-		miExit.addActionListener(this);
-		vecItem.add(miInput);
-		vecItem.add(miLoad);
-		vecItem.add(miSave);
-		vecItem.add(miHide);
-		vecItem.add(miReshow);
-		vecItem.add(miDelete);
-		vecItem.add(miExit);
-		
-		
-		// Screen 메뉴에 아이템 달기
-		mnuScreen.add(miInput);
-		mnuScreen.add(miLoad);
-		mnuScreen.add(miSave);
-		mnuScreen.add(miHide);
-		mnuScreen.add(miReshow);
-		mnuScreen.add(miDelete);
-		mnuScreen.addSeparator(); //분리선
-		mnuScreen.add(miExit);
-		
-		
-		//프레임에 메뉴바 붙이기
-		setJMenuBar(menuBar);
-	}
-	
-	
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		Object obj = e.getSource();
-//		if (obj == tfSearch || obj == btnSearch) {
-//			String name = tfName.getText();
-//			PhoneInfo info = book.searchByName(name);
-//			if (info == null) {
-//				taMessage.append("\n" + name + "님의 정보가 없습니다.");
-//			} else {
-//				printData(info);
-//				taMessage.append("\n---- 검색 완료 ----");
-//			}
-//		} else if (obj == btnInput) {
-		if (obj == btnInput) {
+		System.out.println(obj);
+		
+		if (obj == tfSearch || obj == btnSearch) {
+			String name = tfSearch.getText();
+			if (name != null && !name.equals("")) {
+				PhoneInfo info = book.searchByName(name);
+				if (info == null) {
+					taMessage.append("\n" + name + "님의 정보가 없습니다.");
+				} else {
+					printData(info);
+					taMessage.append("\n---- 검색 완료 ----");
+				}
+			}
+		} else if (obj == miLoad) {
+			int result = chooser.showOpenDialog(null);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				String path = chooser.getSelectedFile().getPath();
+				book.load(path);
+			}
+		} else if (obj == miSave) { 
+			int result = chooser.showSaveDialog(null);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				String path = chooser.getSelectedFile().getPath();
+				book.save(path);
+			}
+		} else if (obj == btnInput || obj == miInput) {
 			myInputDialog.setVisible(true);
 		
-		} else if (obj == btnGetAll) {
-			Vector<PhoneInfo> vector = book.getAll();
+		} else if (obj == btnGetAll || obj == miGetAll) {
+//			Vector<PhoneInfo> vector = book.getAll();
+			Vector<PhoneInfo> vector = dao.getAll();
 			if (vector == null || vector.size() == 0) {
 				taMessage.setText("---- 데이터가 없습니다. ----");
 			} else {
 				printData(vector);
 			}
-		} else if (obj == btnUpdate) {
+		} else if (obj == btnUpdate || obj == miUpdate) {
 			String name = JOptionPane.showInputDialog(PhoneBookFrame.this, 
 					"이름을 입력하세요", "입력", 
 					JOptionPane.OK_CANCEL_OPTION);
-			// System.out.println("PhoneBookFrame, actionPorformed, name:" + name);
 			if (name != null && !name.equals("")) {
 				myInputDialog.setInputOrUpdate("수정");
 				PhoneInfo info = book.searchByName(name);
 				if (info == null) {
-					// 옵션팬 보이기
+					JOptionPane.showMessageDialog(null, "데이터 수정에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 				myInputDialog.setInfo(info);
 				myInputDialog.setVisible(true);
 			}
-			// myInputDialog.setVisible(true);
-		
-//			PhoneInfo info = makePhoneInfo();
-//			boolean result = book.modify(info);
-//			if (result) {
-//				taMessage.append("\n" + info.getName() + "의 정보가 수정되었습니다.");
-//			} else {
-//				taMessage.append("\n" + info.getName() + "의 정보가 없습니다.");
-//			}
+		} else if (obj == btnDelete || obj == miDelete) {
+			String name = JOptionPane.showInputDialog(null, "이름을 입력하세요");
+			boolean result = book.delete(name);
+			if (result) {
+				taMessage.append("\n" + name + "의 정보를 삭제했습니다.");
+			} else {
+				taMessage.append("\n" + name + "의 정보가 없습니다.");
+			}
+		} else if (obj == btnExit || obj == miExit) {
+			System.exit(0);
 		} 
-//		else if (obj == btnDelete) {
-//			String name = tfName.getText();
-//			boolean result = book.delete(name);
-//			if (result) {
-//				taMessage.append("\n" + name + "의 정보를 삭제했습니다.");
-//			} else {
-//				taMessage.append("\n" + name + "의 정보가 없습니다.");
-//			}
-//		} 
-//		else if (obj == btnExit) {
-//			System.exit(0);
-//		}
-		else if (obj == btnSave) {
-			book.save();
-		}
-
+		
 	}
-	
 	
 	class MyInputDialog extends JDialog implements ActionListener {
 		private JTextField tfName = new JTextField(); // 이름
@@ -376,6 +280,11 @@ public class PhoneBookFrame extends JFrame implements ActionListener {
 		
 		public void setInputOrUpdate(String title) {
 			setTitle(title);
+			if (title.equals("입력")) {
+				tfName.setEditable(true);
+			} else if (title.equals("수정")) {
+				tfName.setEditable(false);
+			}
 			btnFinish.setText(title + "완료");
 		}
 		
@@ -418,21 +327,32 @@ public class PhoneBookFrame extends JFrame implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object obj = e.getSource();
+			String title = getTitle();
+			
 			if (obj == btnFinish) {
-				PhoneInfo info = this.makePhoneInfo();
-				System.out.println(info);
-				boolean result = book.addInfo(info);
-				if (result) {
-					showMessage("데이터 입력 완료");
-				} else {
-					showMessage("데이터 입력 실패");
+				boolean result = false;
+				if (title.equals("입력")) {
+					PhoneInfo info = this.makePhoneInfo();
+					System.out.println(info);
+					// result = book.addInfo(info);
+					result = dao.addInfo(info);
+					System.out.println("입력 result:" + result);
+				} else if (title.equals("수정")) {
+					PhoneInfo info = this.makePhoneInfo();
+					System.out.println(info);
+					result = book.modify(info);
 				}
+				
+				if (result) {
+					showMessage("데이터 " + title + " 완료");
+				} else {
+					showMessage("데이터 " + title + " 실패");
+				}
+				
 			} else if (obj == btnCancel) {
-				// this.setVisible(false);
+				 this.setVisible(false);
 			}
 			this.setVisible(false);
 		}
-		
 	}
-	
 }
