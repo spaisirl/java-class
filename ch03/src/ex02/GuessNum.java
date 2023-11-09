@@ -42,7 +42,7 @@ public class GuessNum {
 		
 		
 		
-		initRecords();
+		initRecords(targetNum);
 		showRecords();
 		
 		again();
@@ -162,6 +162,7 @@ public class GuessNum {
 	 * 
 	 * @param records 점수 기록 배열
 	 */
+	/*
 	public static void initRecords() {
 		
 		
@@ -179,8 +180,39 @@ public class GuessNum {
 			
 		}
 	}
+	*/
+	
+	public static void initRecords(int aRecord) {
+		
+	    for (int i = 0; i < records.length; i++) {
+	        if (i > records[i]) {
+	            // 새로운 기록이 현재 기록보다 크다면 업데이트
+	            for (int j = records.length - 1; j > i; j--) {
+	                // 기존 기록을 한 칸씩 뒤로 이동
+	                records[j] = records[j - 1];
+	            }
+	            records[i] = aRecord; // 새로운 기록을 삽입
+	            break; // 업데이트를 완료하면 루프 종료
+	        }
+	    }
+	}
+
+	public static void showRecords() {
+	    
+		initRecords(30000); // 기록 초기화
+
+	    // 기록 업데이트 예시
+	    int newScore = 35000; // 새로운 점수
+	    initRecords(newScore); // 기록 업데이트
+
+	    showRecords(); // 업데이트된 기록 출력
+	    
+	}
 	
 	// 마지막으로 점수 갱신 시 새로운 큰 기록이 생겼을 시에 첫번째로
 	// 오게 배열마다 비교해준다. [2]>[1]
+	    
+	
+
 
 }
