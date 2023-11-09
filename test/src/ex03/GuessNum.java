@@ -147,7 +147,7 @@ public class GuessNum extends JFrame implements ActionListener {
 
 	    southPanel.add(threadPanel);
 
-	    // UI에 Southpanel
+	    // UI에 Southpanel 붙이기
 	    con.add(southPanel, BorderLayout.SOUTH);
 	    
 	    con.setFocusable(true);
