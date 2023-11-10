@@ -61,8 +61,6 @@ public class GuessNum extends JFrame implements ActionListener {
 		setListener();
 		init();
 		TabAndThreadEx();
-		
-
 
 		setUI();
 		
@@ -88,8 +86,7 @@ public class GuessNum extends JFrame implements ActionListener {
 		tfInput.addActionListener(this);
 		btnInput.addActionListener(this);
 		btnNewGame.addActionListener(this);
-		
-	
+
 		
 	}
 

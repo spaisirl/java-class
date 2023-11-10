@@ -3,6 +3,8 @@ package ex03;
 import java.util.Scanner;
 import java.util.Vector;
 
+
+// 오라클 연결을 위한 테스트
 public class JDBCTest {
 
 	private static ScoreDao dao = ScoreDao.getInstance();
