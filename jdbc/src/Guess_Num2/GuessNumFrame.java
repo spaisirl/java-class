@@ -2,11 +2,13 @@ package Guess_Num2;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,13 +17,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import ex03.ScoreDao;
-import ex03.ScoreVo;
 
 @SuppressWarnings("serial")
 public class GuessNumFrame extends JFrame implements ActionListener {
-	private ScoreDao dao = ScoreDao.getInstance();
+	private static final int MIN_SCORE = 30000; 
 	private GameManager manager = GameManager.getInstance();
+	private ScoreDao scoreDao = ScoreDao.getInstance();
+	
+	private MyDialog dialog = new MyDialog(this, "다이얼로그", true);
 	
 	private static final String START_MESSAGE 
 		= "1~100 사이의 임의의 숫자를 맞춰보세요\n-----기회는 5번입니다.-----";
@@ -32,6 +35,7 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 	private JButton btnInput = new JButton("입력");
 	private JLabel lblRecord = new JLabel("기록:");
 	private JTextField tfRecord = new JTextField("300000");
+	private JButton btnRecord = new JButton("기록보기");
 	private JButton btnNewGame = new JButton("새게임");
 	
 	// Center
@@ -45,9 +49,12 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 	private long startTime;
 	private long endTime;
 	
-	public GuessNumFrame( ) {
+	private UserVo loginVo;
+	
+	public GuessNumFrame(UserVo userVo) {
+		this.loginVo = userVo;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("숫자맞추기");
+		setTitle("숫자맞추기 - " + loginVo.getUserId() + "(" + loginVo.getUserName() + ")");
 		setSize(700, 500);
 		setUI();
 		setListener();
@@ -64,6 +71,20 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 		tfInput.addActionListener(this);
 		btnInput.addActionListener(this);
 		btnNewGame.addActionListener(this);
+		
+		/*
+		btnRecord.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(true);
+				System.out.println("다이얼로그 열림");
+				
+			}
+		});
+		*/
+		
+		
 	}
 
 	private void setUI() {
@@ -89,7 +110,11 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 		pnlNorth.add(tfInput);
 		pnlNorth.add(btnInput);
 		pnlNorth.add(lblRecord);
+		int minScore = scoreDao.getMinScore();
+		System.out.println("minScore:" + minScore);
+		tfRecord.setText(String.valueOf(minScore));
 		pnlNorth.add(tfRecord);
+		pnlNorth.add(btnRecord);
 		pnlNorth.add(btnNewGame);
 		con.add(pnlNorth, BorderLayout.NORTH);
 	}
@@ -106,10 +131,9 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 		startTime = System.currentTimeMillis();
 	}
 
-	public static void main(String[] args) {
-		new GuessNumFrame();
-
-	}
+//	public static void main(String[] args) {
+//		new GuessNumFrame();
+//	}
 	
 	private void printHeart() {
 		int count = manager.getCount();
@@ -123,9 +147,17 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 	private void updateRecord() {
 		System.out.println("updateRecord");
 		long score = endTime - startTime;
-		String username = JOptionPane.showInputDialog(this, "이름을 입력하세요");
-		ScoreVo scoreVo = new ScoreVo(username, (int)score);
-		dao.addScore(scoreVo);
+		if (score > MIN_SCORE) {
+			return;
+		}
+//		String username = JOptionPane.showInputDialog(this, "이름을 입력하세요");
+//		ScoreVo scoreVo = new ScoreVo(username, (int)score);
+		ScoreVo scoreVo = new ScoreVo();
+		scoreVo.setUserId(loginVo.getUserId());
+		scoreVo.setScore((int)score);
+		boolean result  = scoreDao.addScore(scoreVo);
+		System.out.println("result:" + result);
+		//데이터 입력 완료 메세지
 		String strRecord = tfRecord.getText();
 		long lRecord = Long.parseLong(strRecord);
 		if (score < lRecord) {
@@ -187,7 +219,24 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 			tfInput.setText("");
 		} else if (obj == btnNewGame) {
 			init();
+		} else if (obj == btnRecord) {
+			dialog.setVisible(true);
 		}
+		
+	}
+	
+	class MyDialog extends JDialog {
+
+	
+		public MyDialog(JFrame owner, String title, boolean isModal) {
+			super(owner, title, isModal);
+			this.setSize(200,200);
+			this.setLayout(new FlowLayout());
+			this.add(new JLabel("이름"));
+			
+			
+		}
+		
 		
 	}
 

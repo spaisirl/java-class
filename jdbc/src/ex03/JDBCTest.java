@@ -3,21 +3,15 @@ package ex03;
 import java.util.Scanner;
 import java.util.Vector;
 
-
-// 오라클 연결을 위한 테스트
 public class JDBCTest {
-
 	private static ScoreDao dao = ScoreDao.getInstance();
 	private static Scanner scanner = new Scanner(System.in);
 	
 	public static void main(String[] args) {
-		/*
-		 DAO - 데이터 접근 객체 - 싱글톤
-		 */
-		insertData();
+		
+		// insertData();
 		readData();
 		scanner.close();
-
 	}
 	
 	private static void readData() {
@@ -27,9 +21,8 @@ public class JDBCTest {
 			int score = scoreVo.getScore();
 			System.out.println(username + " | " + score);
 		}
-		
 	}
-
+	
 	private static void insertData() {
 		System.out.print("이름:");
 		String name = scanner.next();
@@ -41,4 +34,5 @@ public class JDBCTest {
 		boolean result = dao.addScore(scoreVo);
 		System.out.println("result:" + result);
 	}
+
 }

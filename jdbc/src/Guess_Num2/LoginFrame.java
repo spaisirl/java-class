@@ -1,57 +1,55 @@
 package Guess_Num2;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class LoginFrame extends JFrame implements ActionListener {
 	
-	private Container con = getContentPane();
-	private RegisterDialog registerDialog = new RegisterDialog(this, "입력", true);
 	
-	private JLabel labelId = new JLabel("아이디");
-	private JTextField tfId = new JTextField(5);	
-	private JLabel labelPw = new JLabel("패스워드");
-	private JPasswordField tfPw = new JPasswordField(5);
-	private JButton btnlg = new JButton("로그인");
-	private JButton btnadd = new JButton("사용자등록");
+	private Container con = getContentPane();
+	private JTextField tfId = new JTextField();
+	private JPasswordField pfPw = new JPasswordField();
+	private JButton btnLogin = new JButton("로그인");
+	private JButton btnRegister = new JButton("사용자등록");
+	
+	private RegisterDialog registerDialog = new RegisterDialog(this, "사용자등록", true);
+	
+	private UserDao userDao = UserDao.getInstance();
 	
 	public LoginFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(300,200);
 		setTitle("로그인");
-		setListener();
+		
 		setUI();
 		
 		setVisible(true);
 		
 	}
 	
-	private void setListener() {
-		btnlg.addActionListener(this);
-		btnadd.addActionListener(this);
-	}
 
 	private void setUI() {
 		
 		con.setLayout(new GridLayout(3, 2));
-		con.add(labelId);
+		con.add(new JLabel("아이디"));
 		con.add(tfId);
-		con.add(labelPw);
-		con.add(tfPw);		
-		con.add(btnlg);
-		con.add(btnadd);
+		con.add(new JLabel("패스워드"));
+		con.add(pfPw);
+		con.add(btnLogin);
+		con.add(btnRegister);
+		btnLogin.addActionListener(this);
+		btnRegister.addActionListener(this);
 		
 		
 	}
@@ -66,11 +64,30 @@ public class LoginFrame extends JFrame implements ActionListener {
 		
 		//누구한테 발생했는지 알아내야 한다.
 		Object obj = e.getSource();
-		if (obj == btnadd) {
+		if (obj == btnRegister) {
 			registerDialog.setVisible(true);
 		}
 		
+		//로그인 버튼
+		
+		else if (obj == btnLogin) {
+			String userId = tfId.getText();
+			String userPw = new String(pfPw.getPassword());
+			LoginDto loginDto = new LoginDto(userId, userPw);
+			UserVo userVo = userDao.login(loginDto);
+			if (userVo == null) {
+				JOptionPane.showMessageDialog(null, "알림", "로그인 실패", JOptionPane.ERROR_MESSAGE);
+			} else {
+				
+				JOptionPane.showMessageDialog(null, "알림", "로그인 성공", JOptionPane.INFORMATION_MESSAGE);
+				new GuessNumFrame(userVo);
+				this.dispose(); // 창 없애기
+			}
+		}
 	}
+	
+	
+	
 	
 	class RegisterDialog extends JDialog implements ActionListener {
 		
@@ -121,20 +138,46 @@ public class LoginFrame extends JFrame implements ActionListener {
 				this.add(components[i]);
 			}
 			
-			this.add(btnCheck);
-			this.add(btnCancel);
+			add(btnCheck);
+			add(btnCancel);
 			
-			char[] chars = ((JPasswordField)tfPw).getPassword();
-			String str = new String(chars);
+			btnCheck.addActionListener(this);
+			btnCancel.addActionListener(this);
 			
 		}
-
+		
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			
+			Object obj = e.getSource();
+			if (obj == btnCheck) {
+				String userId = tfId.getText();
+				char[] chars = tfPw.getPassword();
+				String userPw = new String(chars);
+				// String userPw = new String(tfPw.getPassword()); 쓰는 거 가능
+				String userName = tfName.getText();
+				String userEmail = tfEmail.getText();
+				
+				//setters 이용
+				UserVo userVo = new UserVo(userId, userPw, userName, userEmail);
+				System.out.println("userVo:" + userVo.toString());
+				
+				boolean result = userDao.addUser(userVo); 
+				System.out.println("add result: " + result);
+				if (result) {
+					JOptionPane.showMessageDialog(null, "사용자 등록 완료하였습니다.", "완료", JOptionPane.INFORMATION_MESSAGE);
+					
+				} else {
+					JOptionPane.showMessageDialog(null, "사용자 등록 실패.", "실패", JOptionPane.ERROR_MESSAGE);
+					
+				}
+				
+			}else if (obj == btnCancel) {
+				this.setVisible(false);
+			}
 		}
+		
+	
 		
 	}
 	
