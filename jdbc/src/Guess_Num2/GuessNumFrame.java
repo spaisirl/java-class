@@ -48,6 +48,8 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 	private JPanel pnlSouth = new JPanel();
 	private JLabel lblCount = new JLabel("남은횟수:");
 	private JTextField tfCount = new JTextField(7);
+	
+ 
 
 	
 	private long startTime;
@@ -213,47 +215,41 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 		} else if (obj == btnRecordList) {
 			dialog.getAll();
 			dialog.setVisible(true);
-		}
+		} 
 		
 	}
 	
-	class MyDialog extends JDialog {
+	class MyDialog extends JDialog implements ActionListener {
 		JTextArea taList = new JTextArea();
+	    int curPage = 1;
 	    JPanel menuPanel = new JPanel();
 	    JButton btnLeft = new JButton("Left");
 	    JButton btnRight = new JButton("Right");
-	    int curPage = 1;
 				
 		public MyDialog(JFrame owner, String title, boolean modal) {
 			super(owner, title, modal);
 	        setBackground(Color.DARK_GRAY);
 	        setTitle("기록 목록");
-	        setSize(500, 300);
+	        setSize(500, 500);
 	        taList.setFont(new Font("맑은 고딕", Font.BOLD, 20));
 	        taList.setEditable(false);
 	        add(new JScrollPane(taList));
-	        add(menuPanel, BorderLayout.SOUTH);
+	        //System.out.println("menuPanel:" + menuPanel);
+	        JLabel lalPage = new JLabel("0/0");
+	        add(menuPanel, BorderLayout.CENTER);
+	        menuPanel.add(lalPage, BorderLayout.SOUTH);
+	        menuPanel.add(taList);
 	        menuPanel.add(btnLeft);
 	        menuPanel.add(btnRight);
-
-	        btnLeft.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	               
-	            }
-	        });
-
-	        btnRight.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	              
-	            }
-	        });
+	        btnLeft.addActionListener(this);
+			btnRight.addActionListener(this);
+			btnLeft.setEnabled(false);
+			
 		
 		}
 		
 		public void getAll() {
-			taList.setText("");
+			//taList.setText("");
 			RowNumDto rowNumDto = new RowNumDto();
 			Vector<ScoreUserVo> recordList = scoreDao.getAll(rowNumDto);
 			System.out.println(recordList);
@@ -280,5 +276,37 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 				taList.append("\n");
 			}
 		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Object obj = e.getSource();
+		        if (obj == btnLeft) {
+		            curPage--;
+		            btnRight.setEnabled(true); 
+
+		            if (curPage <= 1) {
+		                btnLeft.setEnabled(false); 
+		                curPage = 1;
+		            }
+		            
+		            updatePage();
+		            
+		        } else if (obj == btnRight) {
+		            curPage++;
+		            btnLeft.setEnabled(true);
+
+		            int maxPages = 10;
+		            if (curPage > maxPages) {
+		                btnRight.setEnabled(false);
+		                curPage = maxPages;
+		            }
+
+		           updatePage();
+		        }
+		}
+		
+		 private void updatePage() {
+			 getAll();
+		    }
 	}
 }
