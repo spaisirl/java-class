@@ -161,14 +161,17 @@ public class LoginFrame extends JFrame implements ActionListener {
 				//setters 이용
 				UserVo userVo = new UserVo(userId, userPw, userName, userEmail);
 				System.out.println("userVo:" + userVo.toString());
+				System.out.println("userVo:" + userVo);
 				
 				boolean result = userDao.addUser(userVo); 
 				System.out.println("add result: " + result);
 				if (result) {
-					JOptionPane.showMessageDialog(null, "사용자 등록 완료하였습니다.", "완료", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "사용자 등록 완료하였습니다.", 
+							"완료", JOptionPane.INFORMATION_MESSAGE);
 					
 				} else {
-					JOptionPane.showMessageDialog(null, "사용자 등록 실패.", "실패", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "사용자 등록 실패.", 
+							"실패", JOptionPane.ERROR_MESSAGE);
 					
 				}
 				

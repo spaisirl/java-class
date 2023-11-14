@@ -1,11 +1,13 @@
 package Guess_Num2;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -21,21 +23,22 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 public class GuessNumFrame extends JFrame implements ActionListener {
 	private static final int MIN_SCORE = 30000; 
-	private GameManager manager = GameManager.getInstance();
 	private ScoreDao scoreDao = ScoreDao.getInstance();
-	
-	private MyDialog dialog = new MyDialog(this, "다이얼로그", true);
+	private GameManager manager = GameManager.getInstance();
 	
 	private static final String START_MESSAGE 
 		= "1~100 사이의 임의의 숫자를 맞춰보세요\n-----기회는 5번입니다.-----";
 	private Container con = getContentPane();
+	
+	private MyDialog dialog = new MyDialog(this, "다이얼로그", true);
+	
 	// North
 	private JPanel pnlNorth = new JPanel();
 	private JTextField tfInput = new JTextField(5);
 	private JButton btnInput = new JButton("입력");
 	private JLabel lblRecord = new JLabel("기록:");
 	private JTextField tfRecord = new JTextField("300000");
-	private JButton btnRecord = new JButton("기록보기");
+	private JButton btnRecordList = new JButton("기록보기");
 	private JButton btnNewGame = new JButton("새게임");
 	
 	// Center
@@ -45,6 +48,7 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 	private JPanel pnlSouth = new JPanel();
 	private JLabel lblCount = new JLabel("남은횟수:");
 	private JTextField tfCount = new JTextField(7);
+
 	
 	private long startTime;
 	private long endTime;
@@ -71,20 +75,7 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 		tfInput.addActionListener(this);
 		btnInput.addActionListener(this);
 		btnNewGame.addActionListener(this);
-		
-		/*
-		btnRecord.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dialog.setVisible(true);
-				System.out.println("다이얼로그 열림");
-				
-			}
-		});
-		*/
-		
-		
+		btnRecordList.addActionListener(this);
 	}
 
 	private void setUI() {
@@ -114,7 +105,7 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 		System.out.println("minScore:" + minScore);
 		tfRecord.setText(String.valueOf(minScore));
 		pnlNorth.add(tfRecord);
-		pnlNorth.add(btnRecord);
+		pnlNorth.add(btnRecordList);
 		pnlNorth.add(btnNewGame);
 		con.add(pnlNorth, BorderLayout.NORTH);
 	}
@@ -219,25 +210,75 @@ public class GuessNumFrame extends JFrame implements ActionListener {
 			tfInput.setText("");
 		} else if (obj == btnNewGame) {
 			init();
-		} else if (obj == btnRecord) {
+		} else if (obj == btnRecordList) {
+			dialog.getAll();
 			dialog.setVisible(true);
 		}
 		
 	}
 	
 	class MyDialog extends JDialog {
+		JTextArea taList = new JTextArea();
+	    JPanel menuPanel = new JPanel();
+	    JButton btnLeft = new JButton("Left");
+	    JButton btnRight = new JButton("Right");
+	    int curPage = 1;
+				
+		public MyDialog(JFrame owner, String title, boolean modal) {
+			super(owner, title, modal);
+	        setBackground(Color.DARK_GRAY);
+	        setTitle("기록 목록");
+	        setSize(500, 300);
+	        taList.setFont(new Font("맑은 고딕", Font.BOLD, 20));
+	        taList.setEditable(false);
+	        add(new JScrollPane(taList));
+	        add(menuPanel, BorderLayout.SOUTH);
+	        menuPanel.add(btnLeft);
+	        menuPanel.add(btnRight);
 
-	
-		public MyDialog(JFrame owner, String title, boolean isModal) {
-			super(owner, title, isModal);
-			this.setSize(200,200);
-			this.setLayout(new FlowLayout());
-			this.add(new JLabel("이름"));
-			
-			
+	        btnLeft.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	               
+	            }
+	        });
+
+	        btnRight.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	              
+	            }
+	        });
+		
 		}
 		
-		
+		public void getAll() {
+			taList.setText("");
+			RowNumDto rowNumDto = new RowNumDto();
+			Vector<ScoreUserVo> recordList = scoreDao.getAll(rowNumDto);
+			System.out.println(recordList);
+			for (int i = 0; i < recordList.size(); i++) {
+				
+				ScoreUserVo scoreUserVo = recordList.get(i);
+				String userId = scoreUserVo.getUserId();
+				String userName = scoreUserVo.getUserName();
+				int score = scoreUserVo.getScore();
+				Date regdate = scoreUserVo.getRegdate();
+				String grade = scoreUserVo.getGrade();
+				
+				taList.append(String.valueOf(i +1));
+				taList.append(".");
+				taList.append(userId);
+				taList.append(" | ");
+				taList.append(userName);
+				taList.append(" | ");
+				taList.append(String.valueOf(score));
+				taList.append(" | ");
+				taList.append(regdate.toString());
+				taList.append(" | ");
+				taList.append(grade);
+				taList.append("\n");
+			}
+		}
 	}
-
 }
