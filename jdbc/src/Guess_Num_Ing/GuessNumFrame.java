@@ -1,4 +1,4 @@
-package Guess_Num2;
+package Guess_Num_Ing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

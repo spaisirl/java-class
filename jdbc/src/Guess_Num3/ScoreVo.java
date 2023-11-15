@@ -1,4 +1,4 @@
-package Guess_Num2;
+package Guess_Num3;
 
 import java.sql.Date;
 
@@ -7,7 +7,7 @@ public class ScoreVo {
 	private String userId;
 	private Integer score;
 	private Date regdate;
-	
+
 	public ScoreVo() {
 		super();
 	}
@@ -25,7 +25,7 @@ public class ScoreVo {
 		this.score = score;
 		this.regdate = regdate;
 	}
-	
+
 	public Integer getScoreId() {
 		return scoreId;
 	}
@@ -63,6 +63,4 @@ public class ScoreVo {
 		return "ScoreVo [scoreId=" + scoreId + ", userId=" + userId + ", score=" + score + ", regdate=" + regdate + "]";
 	}
 
-
-	
 }

@@ -1,4 +1,4 @@
-package Guess_Num2;
+package Guess_Num_Ing;
 
 public class GameManager {
 	private static GameManager instance = new GameManager();

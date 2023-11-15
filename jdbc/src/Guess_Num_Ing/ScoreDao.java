@@ -1,4 +1,4 @@
-package Guess_Num2;
+package Guess_Num_Ing;
 
 import java.sql.Connection;
 import java.sql.Date;
