@@ -131,17 +131,20 @@ public class SqlExamFrame extends JFrame implements ActionListener {
 			}
 		} else if (obj == btnUpdate) {
 		    // 사용자 입력에서 학생 번호(sno)를 얻고 싶다고 가정합니다.
+			
 		    String sno = JOptionPane.showInputDialog(SqlExamFrame.this,
 		            "학번을 입력하세요", "입력",
 		            JOptionPane.OK_CANCEL_OPTION);
 		    System.out.println("sno " + sno);
+		    
 		    if (sno != null && !sno.equals("")) {
-		    	SqlExamVo info = dao.getInfo(sno);
+//		    	SqlExamVo info = dao.getInfo(sno);
+		    	// 여기서부터 실행 되지 않음.
 
-		        if (info != null) {
+		        if (sno != null) {
 
 		            myInputDialog.setInputOrUpdate("수정");
-		            myInputDialog.setInfo(info);
+//		            myInputDialog.setInfo(sno);
 		            myInputDialog.setVisible(true);
 
 		            // 대화상자가 닫힌 후 업데이트된 정보를 가져옵니다.
@@ -151,26 +154,40 @@ public class SqlExamFrame extends JFrame implements ActionListener {
 		            if (sno != null) {
 		                boolean result = dao.addInfo(updatedInfo);
 		                
+		                
 		                if (result) {
 		                    // 성공 메시지를 표시하거나 이에 따라 UI를 업데이트합니다.
 		                    JOptionPane.showMessageDialog(null, "수정이 완료되었습니다.", "성공", JOptionPane.INFORMATION_MESSAGE);
 
 		                    // UI의 데이터를 새로 고칩니다.
+		                    /*
 		                    Vector<SqlExamVo> vector = dao.getAll();
+		                    
+		                    
 		                    if (vector == null || vector.size() == 0) {
 		                        taMessage.setText("---- 데이터가 없습니다. ----");
 		                    } else {
 		                        printData(vector);
 		                    }
-		                } else {
+		                    */
+		                } 
+		                
+		                else {
 		                    //업데이트가 실패하면 오류 메시지를 표시합니다.
 		                    JOptionPane.showMessageDialog(null, "수정에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
 		                }
+		                
 		            }
-		        } else {
+		        } 
+		        
+		        /*
+		        else {
 		            JOptionPane.showMessageDialog(null, sno + "의 정보가 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
 		        }
+		        */
 		    }
+
+
 		} else if (obj == btnDelete) {
 			String name = JOptionPane.showInputDialog(null, "이름을 입력하세요");
 			boolean result = dao.delete(name);

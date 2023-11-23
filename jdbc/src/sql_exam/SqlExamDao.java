@@ -50,6 +50,7 @@ public class SqlExamDao {
 		try {
 			conn = this.getConnection();
 			// 3. 쿼리문 작성
+			// 여기서 오류 발생
 			String sql = "INSERT INTO TBL_STUDENT "
 					+ "		(SNO, SNAME, SYEAR, GENDER, "
 					+ "		 MAJOR, SCORE)"
