@@ -14,7 +14,7 @@ public class SqlExamDao {
 		return instance;
 	}
 	
-	private Vector<SqlExamVo> vec = new Vector<>();
+
 	
 	// 접속 정보
 	private static final String DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
@@ -75,31 +75,44 @@ public class SqlExamDao {
 	}
 	
 	// 수정 기능
-	public boolean update(SqlExamVo info) {
+	public SqlExamVo getInfo(String sno) {
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+	    SqlExamVo info = null;
 
 	    try {
 	        conn = this.getConnection();
-	        String sql = "UPDATE TBL_STUDENT SET SNAME=?, SCORE=?, SYEAR=?, MAJOR=?, GENDER=? WHERE SNO=?";
+	        String sql = "SELECT SNO, SNAME, SYEAR, GENDER, "
+	                   + "CASE MAJOR "
+	                   + "    WHEN 1 THEN '경영' "
+	                   + "    WHEN 2 THEN '화학' "
+	                   + "    WHEN 3 THEN '컴퓨터공학' "
+	                   + "    WHEN 4 THEN '피아노' "
+	                   + "    ELSE 'Unknown' END AS MAJOR, "
+	                   + "SCORE FROM TBL_STUDENT WHERE SNO=?";
 	        pstmt = conn.prepareStatement(sql);
-	        pstmt.setString(1, info.getSname());
-	        pstmt.setInt(2, info.getScore());
-	        pstmt.setInt(3, info.getSyear());
-	        pstmt.setString(4, info.getMajor());
-	        pstmt.setString(5, info.getGender());
-	        pstmt.setString(6, info.getSno());
+	        pstmt.setString(1, sno);
+	        rs = pstmt.executeQuery();
 
-	        int count = pstmt.executeUpdate();
-	        return count > 0;
+	        if (rs.next()) {
+	            String sname = rs.getString("SNAME");
+	            Integer score = rs.getInt("SCORE");
+	            Integer syear = rs.getInt("SYEAR");
+	            String major = rs.getString("MAJOR");
+	            String gender = rs.getString("GENDER");
+	            info = new SqlExamVo(sno, sname, syear, gender, major, score);
+	        }
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    } finally {
-	        closeAll(null, pstmt, conn);
+	        closeAll(rs, pstmt, conn);
 	    }
 
-	    return false;
+	    return info;
 	}
+
 	// 삭제 기능
 	public boolean delete(String name) {
 	    Connection conn = null;
@@ -194,48 +207,59 @@ public class SqlExamDao {
 		return null;
 	}
 	*/
-	// 학번으로 검색하기
-		public SqlExamVo searchByName(String searchSno) {
-			for (int i = 0; i < vec.size(); i++) {
-				SqlExamVo info = vec.get(i);
-				String sno = info.getSno();
-				if (searchSno.equals(sno)) {
-					
-					return info;
-				}
-			}
-			return null;
-			// System.out.println(searchName + "을(를) 찾지 못하였습니다.");
-		}
-		
-	
-	public SqlExamVo getInfo(String sno) {
+
+	/*
+	 * 아래 코드와 비교하기
+	public boolean getInfo(String sno) {
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
 
 	    try {
-	        conn = this.getConnection();
+	    	conn = this.getConnection();
 	        String sql = "SELECT * FROM TBL_STUDENT WHERE SNO=?";
 	        pstmt = conn.prepareStatement(sql);
 	        pstmt.setString(1, sno);
-	        rs = pstmt.executeQuery();
 
-	        if (rs.next()) {
-	            String sname = rs.getString("SNAME");
-	            Integer score = rs.getInt("SCORE");
-	            Integer syear = rs.getInt("SYEAR");
-	            String major = rs.getString("MAJOR");
-	            String gender = rs.getString("GENDER");
-	            return new SqlExamVo(sno, sname, syear, gender, major, score);
-	        }
+	        int count = pstmt.executeUpdate();
+	        return count > 0;
+	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    } finally {
 	        closeAll(rs, pstmt, conn);
 	    }
 
-	    return null;
+	    return false;
 	}
+	*/
+	
+	public boolean isStudentExists(String sno) {
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conn = this.getConnection();
+	        String sql = "SELECT COUNT(*) FROM TBL_STUDENT WHERE SNO=?";
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, sno);
+
+	        rs = pstmt.executeQuery();
+
+	        if (rs.next()) {
+	            int count = rs.getInt(1);
+	            return count > 0;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        closeAll(rs, pstmt, conn);
+	    }
+
+	    return false;
+	}
+
 	
 }

@@ -21,7 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-
 @SuppressWarnings("serial")
 public class SqlExamFrame extends JFrame implements ActionListener {
 	private static final String DELIM = " | ";
@@ -113,12 +112,13 @@ public class SqlExamFrame extends JFrame implements ActionListener {
 		}
 	}
 	
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		Object obj = e.getSource();
-
+		System.out.println(obj);
+		
+		
 		if (obj == btnInput) {
 			myInputDialog.setVisible(true);
 		
@@ -130,21 +130,47 @@ public class SqlExamFrame extends JFrame implements ActionListener {
 				printData(vector);
 			}
 		} else if (obj == btnUpdate) {
-			String sno = JOptionPane.showInputDialog(SqlExamFrame.this, 
-					"학번을 입력하세요", "입력", 
-					JOptionPane.OK_CANCEL_OPTION);
-			
-			if (sno != null && !sno.equals("")) {
-				SqlExamVo info = dao.getInfo(sno);
-				myInputDialog.setInputOrUpdate("수정");
-				if (info == null) {
-					// 옵션팬 보이기
-					return;
-				}
-				myInputDialog.setInfo(info);
-				myInputDialog.setVisible(true);
-			} 
-			
+		    // 사용자 입력에서 학생 번호(sno)를 얻고 싶다고 가정합니다.
+		    String sno = JOptionPane.showInputDialog(SqlExamFrame.this,
+		            "학번을 입력하세요", "입력",
+		            JOptionPane.OK_CANCEL_OPTION);
+		    System.out.println("sno " + sno);
+		    if (sno != null && !sno.equals("")) {
+		    	SqlExamVo info = dao.getInfo(sno);
+
+		        if (info != null) {
+
+		            myInputDialog.setInputOrUpdate("수정");
+		            myInputDialog.setInfo(info);
+		            myInputDialog.setVisible(true);
+
+		            // 대화상자가 닫힌 후 업데이트된 정보를 가져옵니다.
+		            SqlExamVo updatedInfo = myInputDialog.makeInfo();
+
+		            // 사용자가 업데이트된 정보를 제공한 경우 데이터베이스를 업데이트합니다.
+		            if (sno != null) {
+		                boolean result = dao.addInfo(updatedInfo);
+		                
+		                if (result) {
+		                    // 성공 메시지를 표시하거나 이에 따라 UI를 업데이트합니다.
+		                    JOptionPane.showMessageDialog(null, "수정이 완료되었습니다.", "성공", JOptionPane.INFORMATION_MESSAGE);
+
+		                    // UI의 데이터를 새로 고칩니다.
+		                    Vector<SqlExamVo> vector = dao.getAll();
+		                    if (vector == null || vector.size() == 0) {
+		                        taMessage.setText("---- 데이터가 없습니다. ----");
+		                    } else {
+		                        printData(vector);
+		                    }
+		                } else {
+		                    //업데이트가 실패하면 오류 메시지를 표시합니다.
+		                    JOptionPane.showMessageDialog(null, "수정에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+		                }
+		            }
+		        } else {
+		            JOptionPane.showMessageDialog(null, sno + "의 정보가 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+		        }
+		    }
 		} else if (obj == btnDelete) {
 			String name = JOptionPane.showInputDialog(null, "이름을 입력하세요");
 			boolean result = dao.delete(name);
@@ -153,11 +179,9 @@ public class SqlExamFrame extends JFrame implements ActionListener {
 			} else {
 				taMessage.append("\n" + name + "의 정보가 없습니다.");
 			}
-		}
+		} 
 		
 	}
-	
-	
 	class MyInputDialog extends JDialog implements ActionListener {
 		private JTextField tfSno = new JTextField(); // 학번
 		private JTextField tfSname = new JTextField(); // 이름
@@ -269,7 +293,7 @@ public class SqlExamFrame extends JFrame implements ActionListener {
 				} else if (title.equals("수정")) {
 					SqlExamVo info = this.makeInfo();
 					System.out.println(info);
-					result = dao.update(info);
+					result = dao.addInfo(info);
 				}
 				
 				if (result) {
